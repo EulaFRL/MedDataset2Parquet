@@ -3,7 +3,14 @@ from config import IMAGE_DIR, REPORT_DIR
 import os
 import pandas as pd
 
-# @todo: Please revise this file and config.py according to how your data are stored.
+"""
+main.py is designed for the following data storage form, PLEASE REVISE ACCORDING TO HOW YOUR DATASET IS STORED: 
+
+In IMAGE_DIR, there are folders named by "pid_year", for example "100004_0". There could be one or multiple images in each folder. Reports are in REPORT_DIR, their names also starts with "pid_year", each report correspond to the image folder with the same pid_year, both image folders and reports are arranged in the right order, meaning that the images in the 1st image folder would correspond to the 1st report, and so on.
+
+If there are multiple images in the same "pid_year" folder, the corresponding report is repeated to match the number of images. The metadata column contains an empty dictionary.
+
+"""
 
 data_X = {'images': [], 'report_text': [], 'metadata': [{}]}
 
