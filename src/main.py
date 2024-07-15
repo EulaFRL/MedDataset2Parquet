@@ -15,28 +15,36 @@ If there are multiple images in the same "pid_year" folder, the corresponding re
 data_X = {'images': [], 'report_text': [], 'label': [], 'metadata': [{}]}
 
 
+def filter_unwanted_files(file_list):
+    """Filter out unwanted files like .DS_Store."""
+    return [f for f in file_list if not f.startswith('.')]
+
+
 # Function to handle multiple images in one patient_year folder
 def process_image_folder(data_X, image_folder_path, report_text, label):
-    image_files = sorted(os.listdir(image_folder_path))
+    image_files = sorted(filter_unwanted_files(os.listdir(image_folder_path)))
     for image_file in image_files:
         image_path = os.path.join(image_folder_path, image_file)
 
         # Check if the image is RGB and update metadata
         image_is_rgb(data_X, image_path)
 
-        # @todo: originally stored in jpeg format
+        # @todo: originally stored in dsewxz format
         # @todo: 224x224, please check the function signature in utils.py for more information
-        jpeg_to_np(data_X, 224, image_path)
+        jpeg_to_nestedList(data_X, 224, image_path)
 
         # report is repeated if it corresponds to multiple images
         data_X['report_text'].append(report_text)
 
         data_X['label'].append(label)
 
+    print(image_folder_path)
+
+print("Start processing positive images and reports")
 
 # Process positive dataset
-pos_image_folders = sorted(os.listdir(POS_IMAGE_DIR))
-pos_report_files = sorted(os.listdir(POS_REPORT_DIR))
+pos_image_folders = sorted(filter_unwanted_files(os.listdir(POS_IMAGE_DIR)))
+pos_report_files = sorted(filter_unwanted_files(os.listdir(POS_REPORT_DIR)))
 
 for image_folder, report_file in zip(pos_image_folders, pos_report_files):
     image_folder_path = os.path.join(POS_IMAGE_DIR, image_folder)
@@ -47,9 +55,11 @@ for image_folder, report_file in zip(pos_image_folders, pos_report_files):
 
     process_image_folder(data_X, image_folder_path, report_text, label=1)
 
+print("Start processing negative images and reports")
+
 # Process negative dataset
-neg_image_folders = sorted(os.listdir(NEG_IMAGE_DIR))
-neg_report_files = sorted(os.listdir(NEG_REPORT_DIR))
+neg_image_folders = sorted(filter_unwanted_files(os.listdir(NEG_IMAGE_DIR)))
+neg_report_files = sorted(filter_unwanted_files(os.listdir(NEG_REPORT_DIR)))
 
 for image_folder, report_file in zip(neg_image_folders, neg_report_files):
     image_folder_path = os.path.join(NEG_IMAGE_DIR, image_folder)
@@ -60,10 +70,23 @@ for image_folder, report_file in zip(neg_image_folders, neg_report_files):
 
     process_image_folder(data_X, image_folder_path, report_text, label=0)
 
+print("Finished processing negataive images and reports")
+
+# Check if 'images', 'report_text', and 'label' lists have the same length
+assert len(data_X['images']) == len(data_X['report_text']) == len(data_X['label']), "Mismatch in lengths of images, report_text, and label lists"
 
 # @todo: Add some metadata
-add_metadata(data_X, 'name', 'NLST')
+add_metadata(data_X, 'name', 'NLST1')
 
 # Convert to DataFrame and save as parquet
-df = pd.DataFrame.from_dict(data_X)
-df.to_parquet('data_X.parquet', index=False)
+df = pd.DataFrame({
+    'images': data_X['images'],
+    'report_text': data_X['report_text'],
+    'label': data_X['label'],
+    'metadata': [data_X['metadata'][0]] * len(data_X['images'])  # Repeat metadata for each row
+})
+
+print("Converted to DataFrame, Start Saving as .parquet")
+
+# @todo: change file name
+df.to_parquet('NLST1.parquet', index=False)
