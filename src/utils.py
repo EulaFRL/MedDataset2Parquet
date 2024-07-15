@@ -8,6 +8,7 @@ each parquet is a dataset
 parquet format:
 data_X = {'images':[image1, image2, ....],
 'report_text':[report1, report2,...],
+'label': [1, 1, ..., 0, 0, ...],
 'metadata':[dict{}]}
 """
 
