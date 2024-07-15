@@ -1,0 +1,2 @@
+IMAGE_DIR = ''
+REPORT_DIR = ''
