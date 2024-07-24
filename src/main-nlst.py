@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 """
-main.py is designed for the following data storage form, PLEASE REVISE ACCORDING TO HOW YOUR DATASET IS STORED: 
+main-nlst.py is designed for the following data storage form, PLEASE REVISE ACCORDING TO HOW YOUR DATASET IS STORED: 
 
 In IMAGE_DIR, there are folders named by "pid_year", for example "100004_0". There could be one or multiple images in each folder. Reports are in REPORT_DIR, their names also starts with "pid_year", each report correspond to the image folder with the same pid_year, both image folders and reports are arranged in the right order, meaning that the images in the 1st image folder would correspond to the 1st report, and so on.
 
@@ -29,13 +29,12 @@ def process_image_folder(data_X, image_folder_path, report_text, label):
         # Check if the image is RGB and update metadata
         image_is_rgb(data_X, image_path)
 
-        # @todo: originally stored in dsewxz format
+        # @todo: originally stored in jpeg format
         # @todo: 224x224, please check the function signature in utils.py for more information
-        jpeg_to_nestedList(data_X, 224, image_path)
+        jpeg_to_serialized_numpy(data_X, 224, image_path)
 
         # report is repeated if it corresponds to multiple images
         data_X['report_text'].append(report_text)
-
         data_X['label'].append(label)
 
     print(image_folder_path)
@@ -70,7 +69,7 @@ for image_folder, report_file in zip(neg_image_folders, neg_report_files):
 
     process_image_folder(data_X, image_folder_path, report_text, label=0)
 
-print("Finished processing negataive images and reports")
+print("Finished processing negative images and reports")
 
 # Check if 'images', 'report_text', and 'label' lists have the same length
 assert len(data_X['images']) == len(data_X['report_text']) == len(data_X['label']), "Mismatch in lengths of images, report_text, and label lists"
