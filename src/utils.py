@@ -94,14 +94,13 @@ def get_segmented_image(image_path, image_filenames, masks):
         image = cv2.imread(os.path.join(image_path, image_filename))
         img_masks.append(np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8))
 
-    combined_masks = []
     for img_mask, mask in zip(img_masks, masks):
         if mask == '{}':
             continue
         mask = json.loads(mask)
         if mask['name'] == 'polygon':
             points = np.array(list(zip(mask['all_points_x'], mask['all_points_y'])), dtype=np.int32)
-            cv2.fillPoly(img_mask, [points], 1)
+            cv2.fillPoly(img_mask, [points], 1)     # change in-place
         elif mask['name'] == 'ellipse' or mask['name'] == 'circle' or mask['name'] == 'point':
             if mask['name'] == 'circle':
                 mask['rx'] = mask['ry'] = mask['r']
@@ -111,4 +110,8 @@ def get_segmented_image(image_path, image_filenames, masks):
             axes = (int(mask['rx']), int(mask['ry']))
             cv2.ellipse(img_mask, center, axes, 0, 0, 360, 1, -1)
 
-    return combined_masks
+    return img_masks
+
+def filter_unwanted_files(file_list):
+    """Filter out unwanted files like .DS_Store."""
+    return [f for f in file_list if not f.startswith('.')]

@@ -48,6 +48,9 @@ first_10_rows = pa.Table.from_batches([first_ten_rows]).to_pandas()
 for index, row in first_10_rows.iterrows():
     image_path = os.path.join(output_image_dir, f'image_{index}.jpeg')
     save_image_from_array(row['images'], image_path)
+    # @todo: with segmentations
+    seg_path = os.path.join(output_image_dir, f'seg_{index}.jpeg')
+    save_image_from_array(row['segmentations'], seg_path)
 
 # Read the remaining columns of the parquet file
 remaining_df = first_10_rows[['report_text', 'label', 'metadata']]
