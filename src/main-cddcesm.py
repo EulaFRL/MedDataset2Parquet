@@ -109,7 +109,8 @@ pos_image_files = sorted(filter_unwanted_files(os.listdir(ORIGINAL_IMAGE_DIR)))
 masks = [filename_to_mask[filename] for filename in pos_image_files]   # masks written in coordinate form
 
 for img_mask in get_segmented_image(ORIGINAL_IMAGE_DIR, pos_image_files, masks):
-    GT_mask = np.array(img_mask) > 0    # turn into binary masks
+    # @todo: downsample to 224x224
+    GT_mask = np.array(cv2.resize(img_mask, (224, 224), interpolation=cv2.INTER_AREA)) > 0    # turn into binary masks
     # Serialize the numpy array
     buffer = io.BytesIO()
     np.save(buffer, GT_mask)

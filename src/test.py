@@ -13,7 +13,7 @@ store segmentations and images separately into jpg, and the other rows into csv
 """
 
 # Define paths
-parquet_file = './NLST1.parquet'
+parquet_file = './CDD-CESM.parquet'
 output_image_dir = '../images&segmentations'
 output_csv_file = 'remaining_rows.csv'
 
@@ -32,9 +32,10 @@ def save_image_from_array(image_bytes, save_path):
     elif image_np.shape[0] == 3:
         # RGB image
         image_np = image_np.transpose((1, 2, 0))  # Shape becomes (n, m, 3)
-        image_np = (image_np * 255).astype(np.uint8)  # Ensure the type is uint8
+        image_np = (image_np * 255).astype(np.uint8)
     else:
-        raise ValueError(f"Invalid image array shape: {image_np.shape}")
+        # Segmentations
+        image_np = (image_np * 255).astype(np.uint8)
 
     # Save the image using cv2
     cv2.imwrite(save_path, image_np)
@@ -58,5 +59,5 @@ remaining_df = first_10_rows[['report_text', 'label', 'metadata']]
 # Save the remaining columns to a CSV file
 remaining_df.to_csv(output_csv_file, index=False)
 
-print(f'First 10 rows images saved to {output_image_dir}')
-print(f'Remaining rows saved to {output_csv_file}')
+print(f'Images&Segmentations saved to {output_image_dir}')
+print(f'Remaining columns saved to {output_csv_file}')

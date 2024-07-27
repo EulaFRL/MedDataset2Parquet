@@ -88,7 +88,13 @@ def report_to_numpy(data_X, report_path):
 
 
 def get_segmented_image(image_path, image_filenames, masks):
-
+    """
+    :param image_path:
+    :param image_filenames:
+    :param masks: segmentation annotations in text
+    :return: img_masks: non-binary masks in numpy arrays
+    Originally written for CDD-CESM
+    """
     img_masks = []
     for image_filename in image_filenames:
         image = cv2.imread(os.path.join(image_path, image_filename))
