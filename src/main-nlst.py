@@ -12,6 +12,9 @@ If there are multiple images in the same "pid_year" folder, the corresponding re
 
 """
 
+# NLST1: 9467 positive, 5480 negative
+# NLST2: 2818 positive
+
 data_X = {'images': [], 'report_text': [], 'label': [], 'metadata': [{}]}
 
 
@@ -21,7 +24,7 @@ def filter_unwanted_files(file_list):
 
 
 # Function to handle multiple images in one patient_year folder
-def process_image_folder(data_X, image_folder_path, report_text, label):
+def process_image_folder(data_X, image_folder_path, label):
     image_files = sorted(filter_unwanted_files(os.listdir(image_folder_path)))
     for image_file in image_files:
         image_path = os.path.join(image_folder_path, image_file)
@@ -33,49 +36,70 @@ def process_image_folder(data_X, image_folder_path, report_text, label):
         # @todo: 224x224, please check the function signature in utils.py for more information
         jpeg_to_serialized_numpy(data_X, 224, image_path)
 
+        if label == 1:
+            report_path = os.path.join(POS_REPORT_DIR, f"{image_file[:-4]}.txt")
+        elif label == 0:
+            report_path = os.path.join(NEG_REPORT_DIR, f"{image_file[0:13]}neg.txt")
+
+        with open(report_path, 'r', encoding='utf-8') as file:
+            report_text = file.read()
+
         # report is repeated if it corresponds to multiple images
         data_X['report_text'].append(report_text)
         data_X['label'].append(label)
 
-    print(image_folder_path)
+    print((image_folder_path, report_path))
 
 print("Start processing positive images and reports")
 
+
 # Process positive dataset
 pos_image_folders = sorted(filter_unwanted_files(os.listdir(POS_IMAGE_DIR)))
-pos_report_files = sorted(filter_unwanted_files(os.listdir(POS_REPORT_DIR)))
+# pos_report_files = filter_unwanted_files(os.listdir(POS_REPORT_DIR))
 
-for image_folder, report_file in zip(pos_image_folders, pos_report_files):
+
+for image_folder in pos_image_folders:
     image_folder_path = os.path.join(POS_IMAGE_DIR, image_folder)
-    report_path = os.path.join(POS_REPORT_DIR, report_file)
 
-    with open(report_path, 'r', encoding='utf-8') as file:
-        report_text = file.read()
+    # if image_folder[0:6] != report_file[0:6]:
+    #     print(image_folder, report_file)
+    #     exit(1)
 
-    process_image_folder(data_X, image_folder_path, report_text, label=1)
+    # with open(report_path, 'r', encoding='utf-8') as file:
+    #     report_text = file.read()
+
+    process_image_folder(data_X, image_folder_path, label=1)
+
+pos_count = len(data_X['label'])
+
+print(f"{pos_count} positive samples")
 
 print("Start processing negative images and reports")
 
 # Process negative dataset
 neg_image_folders = sorted(filter_unwanted_files(os.listdir(NEG_IMAGE_DIR)))
-neg_report_files = sorted(filter_unwanted_files(os.listdir(NEG_REPORT_DIR)))
+# neg_report_files = sorted(filter_unwanted_files(os.listdir(NEG_REPORT_DIR)))
 
-for image_folder, report_file in zip(neg_image_folders, neg_report_files):
+for image_folder in neg_image_folders:
     image_folder_path = os.path.join(NEG_IMAGE_DIR, image_folder)
-    report_path = os.path.join(NEG_REPORT_DIR, report_file)
+    # report_path = os.path.join(NEG_REPORT_DIR, report_file)
 
-    with open(report_path, 'r', encoding='utf-8') as file:
-        report_text = file.read()
+    # if image_folder[0:6] != report_file[0:6]:
+    #     print(image_folder, report_file)
+    #     exit(1)
+    #
+    # with open(report_path, 'r', encoding='utf-8') as file:
+    #     report_text = file.read()
 
-    process_image_folder(data_X, image_folder_path, report_text, label=0)
+    process_image_folder(data_X, image_folder_path, label=0)
 
-print("Finished processing negative images and reports")
+print(f"Finished processing negative images and reports: {len(data_X['label'])-pos_count} negative samples")
 
 # Check if 'images', 'report_text', and 'label' lists have the same length
 assert len(data_X['images']) == len(data_X['report_text']) == len(data_X['label']), "Mismatch in lengths of images, report_text, and label lists"
 
 # @todo: Add some metadata
-add_metadata(data_X, 'name', 'NLST1')
+add_metadata(data_X, 'name', 'NLST2')
 
 # Convert to DataFrame and save as parquet
 df = pd.DataFrame({
@@ -88,4 +112,4 @@ df = pd.DataFrame({
 print("Converted to DataFrame, Start Saving as .parquet")
 
 # @todo: change file name
-df.to_parquet('NLST1.parquet', index=False)
+df.to_parquet('NLST2.parquet', index=False)
