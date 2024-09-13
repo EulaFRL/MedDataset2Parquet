@@ -1,9 +1,11 @@
 # MedDataset2Parquet
 
 Parquet Format:
- data_X = {'images':[image1, image2, ...],
+ data_X = {'instanceID':[pid_(year_slice/abnormalityID), ...]
+'images':[image1, image2, ...],
 'segmentations': [seg4image1, seg4image2, ...],
 'report_text':[report1, report2,...],
+'caption':[caption1, caption2,...],
 'label':[0, 1, ...],
 'metadata':[dict{}]}
 
