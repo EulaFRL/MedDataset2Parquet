@@ -10,6 +10,7 @@ Parquet Format:
 'metadata':[dict{}, repeated to match the length of other columns]}
 
 Required fields: instanceID, images, at least one of report_text or caption, metadata
+
 Optional fields: segmentations, label
 
 Segmentations, if exists for the dataset, are in the form of binary masks in numpy array, serialized. Images are also in the form of serialized numpy arrays.
