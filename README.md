@@ -9,7 +9,7 @@ Parquet Format:
 'label':[0, 1, ...],
 'metadata':[dict{}]}
 
-Segmentations, if exists for the dataset, are in the form of binary masks in numpy array, serialized.
+Segmentations, if exists for the dataset, are in the form of binary masks in numpy array, serialized. Images are also in the form of serialized numpy arrays.
 For negative images in a dataset with segmentations, the corresponding row in 'segementations' is replaced by 'None'
 label[i] = 0 means image i corresponds to a negative diagnosis, while 1 corresponds to a positive diagnosis.
 Metadata are general information about the dataset.
